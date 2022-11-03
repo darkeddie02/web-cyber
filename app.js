@@ -55,8 +55,31 @@ app.post("/register", async (req, res) => {
 });
 
 // Login
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   // Login goes here
+  try {
+    const { email, password } = req.body;
+
+    if (!(email, password)) {
+      res.status(400).send("All inputs required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = jwt.sign(
+        { user_id: user.id, email },
+        process.env.TOKEN_KEY,
+        { expiresIn: "2h" }
+      );
+      user.token = token;
+
+      res.status(200).json(user);
+    }
+    res.status(400).send("Incorrect Credentials!");
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 module.exports = app;

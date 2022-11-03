@@ -1,6 +1,8 @@
 require("dotenv").config();
 require("./config/database").connect();
 
+const auth = require("./middleware/auth");
+
 const User = require("./model/user");
 
 const express = require("express");
@@ -10,7 +12,7 @@ const app = express();
 
 app.use(express.json());
 
-// Register
+// Register Page
 app.post("/register", async (req, res) => {
   try {
     // Get user inputs
@@ -54,7 +56,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Login
+// Login Page
 app.post("/login", async (req, res) => {
   // Login goes here
   try {
@@ -82,4 +84,8 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Welcome Page
+app.post("/welcome", auth, (req, res) => {
+  res.status(200).send("Welcome" + first_name);
+});
 module.exports = app;
